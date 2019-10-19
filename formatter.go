@@ -1,28 +1,32 @@
 package clog
 
 import (
+	"bytes"
 	"fmt"
-	"io"
 	"time"
 )
-const lineFormat = "[%s] canonical-log-line "
+const (
+	_defaultTimestampFormat = time.RFC3339
+	_headerLineFormat = "[%s] canonical-log-line "
+)
 
-func printHeader(out io.Writer) {
-	current := time.Now().Format(time.RFC3339)
-	_, _ = io.WriteString(out, fmt.Sprintf(lineFormat, current))
+func formatHeader() string {
+	current := time.Now().Format(_defaultTimestampFormat)
+	return fmt.Sprintf(_headerLineFormat, current)
 }
 
-func printCanonicalLine(out io.Writer, fields ...Field) {
-	printHeader(out)
+func format(fields ...Field) string {
+	var b bytes.Buffer
+	b.WriteString(formatHeader())
 
 	for _, f := range fields {
 		switch f.fType {
 		case stringType:
 			msg := fmt.Sprintf("%s=%s ", f.key, f.stringVal)
-			_, _ = io.WriteString(out, msg)
+			b.WriteString(msg)
 		case boolType:
 			msg := fmt.Sprintf("%s=%t ", f.key, f.boolVal)
-			_, _ = io.WriteString(out, msg)
+			b.WriteString(msg)
 		case int8Type,
 			int16Type,
 			int32Type,
@@ -32,15 +36,17 @@ func printCanonicalLine(out io.Writer, fields ...Field) {
 			uint32Type,
 			uint64Type:
 			msg := fmt.Sprintf("%s=%d ", f.key, f.integerVal)
-			_, _ = io.WriteString(out, msg)
+			b.WriteString(msg)
 		case float32Type,
 			float64Type:
 			msg := fmt.Sprintf("%s=%f ", f.key, f.floatVal)
-			_, _ = io.WriteString(out, msg)
+			b.WriteString(msg)
 		case errorType,
 			anyType:
 			msg := fmt.Sprintf("%s=%v ", f.key, f.anyVal)
-			_, _ = io.WriteString(out, msg)
+			b.WriteString(msg)
 		}
 	}
+
+	return b.String()
 }

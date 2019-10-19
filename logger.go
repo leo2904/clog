@@ -1,30 +1,43 @@
 package clog
 
 import (
-	"io"
-	"io/ioutil"
-	"os"
+	"github.com/friendsofgo/clog/reporter"
+	"github.com/friendsofgo/clog/reporter/log"
 )
 
-
+// Logger is our Logger for Canonical Log Lines implementation. You should initialize it using
+// the New method.
 type Logger struct {
-	stdOutput io.Writer
+	reporters []reporter.Reporter
 }
 
-func New() *Logger {
+// LoggerOption allow to adjust behaviour of the Logger
+// to be created with New() method.
+type LoggerOption func(*Logger)
+
+// New returns a new Logger
+// If any report has ben added the log reporter will be the default
+func New(opts ...LoggerOption) *Logger {
 	logger := &Logger{
-		stdOutput: os.Stdout,
+		reporters: []reporter.Reporter{log.NewReporter(nil)},
 	}
+
+	for _, opt := range opts {
+		opt(logger)
+	}
+
 	return logger
 }
 
-func NewNop() *Logger {
-	logger := &Logger{
-		stdOutput: ioutil.Discard,
+func WithReporters(reporters ...reporter.Reporter) LoggerOption {
+	return func(l *Logger) {
+		l.reporters = reporters
 	}
-	return logger
 }
 
 func (l *Logger) Print(fields ...Field) {
-	printCanonicalLine(l.stdOutput, fields...)
+	canonicalLine := format(fields...)
+	for _, r := range l.reporters {
+		r.Send(canonicalLine)
+	}
 }
