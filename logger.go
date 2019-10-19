@@ -1,6 +1,8 @@
 package clog
 
 import (
+	"context"
+
 	"github.com/friendsofgo/clog/reporter"
 	"github.com/friendsofgo/clog/reporter/log"
 )
@@ -29,15 +31,36 @@ func New(opts ...LoggerOption) *Logger {
 	return logger
 }
 
+// WithReporters allow to add multiples reporters to our logger
 func WithReporters(reporters ...reporter.Reporter) LoggerOption {
 	return func(l *Logger) {
 		l.reporters = reporters
 	}
 }
 
-func (l *Logger) Print(fields ...Field) {
-	canonicalLine := format(fields...)
+// LineFromContext returns a canonical line using the line found in
+// context. If not found a line in context then new line is created.
+// The lines created is mark as severity Info for reporter.
+func (l *Logger) LineFromContext(ctx context.Context) (*Line, context.Context) {
+	if ctxLine := lineFromContext(ctx); ctxLine != nil {
+		return ctxLine, ctx
+	}
+
+	line := l.newLine()
+	return line, newContext(ctx, line)
+}
+
+func (l *Logger) newLine() *Line {
+	return &Line{
+		logger: l,
+		severity: reporter.SeverityInfo,
+		tags:   make(map[string]Tag),
+		spans:  make(map[string]*Span),
+	}
+}
+
+func (l *Logger) send(canonicalMsg string, severity reporter.Severity) {
 	for _, r := range l.reporters {
-		r.Send(canonicalLine)
+		r.Send(canonicalMsg, severity)
 	}
 }

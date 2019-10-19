@@ -20,7 +20,7 @@ func NewReporter(l *log.Logger) reporter.Reporter {
 	return &logReporter{logger: l}
 }
 
-func (r logReporter) Send(fmtLine string) {
+func (r logReporter) Send(fmtLine string, severity reporter.Severity) {
 	r.logger.Print(fmtLine)
 }
 
