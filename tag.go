@@ -38,6 +38,8 @@ const (
 	errorType
 	// anyType indicates that the tag carries a interface{}.
 	anyType
+	// SkipType indicates that the field is a no-op.
+	skipType
 )
 
 // Tag represent a key-value pair to a logger's context.
@@ -49,7 +51,7 @@ type Tag struct {
 	integerVal int64
 	floatVal   float64
 	boolVal    bool
-	anyVal     interface{}
+	tInterface interface{}
 }
 
 // String transform tag to `logFmt format (https://brandur.org/logfmt)
@@ -73,7 +75,7 @@ func (t Tag) String() string {
 		return fmt.Sprintf("%s=%f", t.key, t.floatVal)
 	case errorType,
 		anyType:
-		return fmt.Sprintf("%s=%v", t.key, t.anyVal)
+		return fmt.Sprintf("%s=%v", t.key, t.tInterface)
 	default:
 		return ""
 	}
@@ -151,7 +153,15 @@ func Uint64(key string, val uint64) Tag {
 
 // Error constructs a tag that carries an error.
 func Error(key string, val error) Tag {
-	return Tag{key: key, tType: errorType, anyVal: val}
+	if val == nil {
+		return Skip()
+	}
+	return Tag{key: key, tType: errorType, tInterface: val}
+}
+
+// Skip constructs a tag no-op for handle with invalid arguments when construct other tags.
+func Skip() Tag {
+	return Tag{tType: skipType}
 }
 
 // Any constructs a tag with any value.
@@ -161,6 +171,8 @@ func Any(key string, val interface{}) Tag {
 		return String(key, value)
 	case bool:
 		return Bool(key, value)
+	case int:
+		return Int(key, value)
 	case int8:
 		return Int8(key, value)
 	case int16:
@@ -169,6 +181,8 @@ func Any(key string, val interface{}) Tag {
 		return Int32(key, value)
 	case int64:
 		return Int64(key, value)
+	case uint:
+		return Uint(key, value)
 	case uint8:
 		return Uint8(key, value)
 	case uint16:
@@ -184,6 +198,6 @@ func Any(key string, val interface{}) Tag {
 	case error:
 		return Error(key, value)
 	default:
-		return Tag{key: key, tType: anyType, anyVal: val}
+		return Tag{key: key, tType: anyType, tInterface: val}
 	}
 }
