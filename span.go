@@ -64,7 +64,8 @@ func (s *Span) String() string {
 		msg += fmt.Sprintf("%s_duration=%f ", s.key, d.Seconds())
 	}
 	if s.flag&IncrementalSpan != 0 {
-		msg += fmt.Sprintf("%s_total=%d ", s.key, len(s.transactions))
+		totalTransactions := len(s.transactions)
+		msg += fmt.Sprintf("%s_total=%d ", s.key, totalTransactions)
 	}
 	s.Unlock()
 	return msg

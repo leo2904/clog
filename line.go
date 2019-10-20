@@ -3,6 +3,7 @@ package clog
 import (
 	"bytes"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -58,19 +59,25 @@ func (l *Line) OpenSpan(key string, flag uint8) *Span {
 
 // MarkAsInfo change the severity of the line to INFO.
 func (l *Line) MarkAsInfo() *Line {
+	l.Lock()
 	l.severity = reporter.SeverityInfo
+	l.Unlock()
 	return l
 }
 
 // MarkAsError change the severity of the line to ERROR.
 func (l *Line) MarkAsError() *Line {
+	l.Lock()
 	l.severity = reporter.SeverityError
+	l.Unlock()
 	return l
 }
 
 // MarkAsCritical change the severity of the line to CRITICAL.
 func (l *Line) MarkAsCritical() *Line {
+	l.Lock()
 	l.severity = reporter.SeverityCritical
+	l.Unlock()
 	return l
 }
 
@@ -89,6 +96,13 @@ func (l *Line) send() {
 func (l *Line) format() string {
 	var b bytes.Buffer
 
+	totalTags := len(l.tags)
+	totalSpans := len(l.spans)
+
+	if totalTags == 0 && totalSpans == 0 {
+		return ""
+	}
+
 	current := time.Now().Format(_defaultTimestampFormat)
 	b.WriteString(fmt.Sprintf(_headerLineFormat, current))
 
@@ -100,5 +114,5 @@ func (l *Line) format() string {
 		b.WriteString(s.String())
 	}
 
-	return b.String()
+	return strings.TrimSpace(b.String())
 }
