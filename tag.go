@@ -70,10 +70,10 @@ func (t Tag) String() string {
 		return fmt.Sprintf("%s=%d", t.key, t.integerVal)
 	case float32Type,
 		float64Type:
-		return fmt.Sprintf("%s=%f ", t.key, t.floatVal)
+		return fmt.Sprintf("%s=%f", t.key, t.floatVal)
 	case errorType,
 		anyType:
-		return fmt.Sprintf("%s=%v ", t.key, t.anyVal)
+		return fmt.Sprintf("%s=%v", t.key, t.anyVal)
 	default:
 		return ""
 	}

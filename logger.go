@@ -38,24 +38,32 @@ func WithReporters(reporters ...reporter.Reporter) LoggerOption {
 	}
 }
 
+// NewLineOnContext initialize new line and add this line to the context.
+// The line created is mark as severity Info for reporter.
+func (l *Logger) NewLineOnContext(ctx context.Context) (*Line, context.Context) {
+	line := l.NewLine()
+	return line, newContext(ctx, line)
+}
+
 // LineFromContext returns a canonical line using the line found in
 // context. If not found a line in context then new line is created.
-// The lines created is mark as severity Info for reporter.
+// The line created is mark as severity Info for reporter.
 func (l *Logger) LineFromContext(ctx context.Context) (*Line, context.Context) {
 	if ctxLine := lineFromContext(ctx); ctxLine != nil {
 		return ctxLine, ctx
 	}
 
-	line := l.newLine()
-	return line, newContext(ctx, line)
+	return l.NewLineOnContext(ctx)
 }
 
-func (l *Logger) newLine() *Line {
+// NewLine initialize a new line.
+// The line created is mark as severity Info for reporter.
+func (l *Logger) NewLine() *Line {
 	return &Line{
-		logger: l,
+		logger:   l,
 		severity: reporter.SeverityInfo,
-		tags:   make(map[string]Tag),
-		spans:  make(map[string]*Span),
+		tags:     make(map[string]Tag),
+		spans:    make(map[string]*Span),
 	}
 }
 
