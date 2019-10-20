@@ -24,6 +24,4 @@ func (r logReporter) Send(fmtLine string, severity reporter.Severity) {
 	r.logger.Print(fmtLine)
 }
 
-func (r logReporter) Close() error {return nil}
-
-
+func (r logReporter) Close() error { return nil }

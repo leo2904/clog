@@ -5,6 +5,7 @@ import (
 )
 
 var contextKeyCanonicalLine = contextKey("canonical-log-line")
+
 type contextKey string
 
 func newContext(ctx context.Context, l *Line) context.Context {

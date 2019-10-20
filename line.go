@@ -19,10 +19,10 @@ const (
 type Line struct {
 	sync.RWMutex
 
-	logger *Logger
+	logger   *Logger
 	severity reporter.Severity
-	tags   map[string]Tag
-	spans  map[string]*Span
+	tags     map[string]Tag
+	spans    map[string]*Span
 }
 
 // AddTag add new tag to the line.

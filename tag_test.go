@@ -114,7 +114,6 @@ func TestTag_String(t *testing.T) {
 		{"Float64", Float64("key_test", 1.0), "key_test=1.000000"},
 		{"Error:Nil", Error("key_test", nil), ""},
 		{"Error", Error("key_test", errors.New("errors happens")), "key_test=errors happens"},
-
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -138,10 +138,10 @@ func TestLine_format(t *testing.T) {
 			"canonical-log-line string-tag=test"},
 		{
 			"line with a span", fields{
-			spans: map[string]*Span{
-				"key1": &Span{key: "test-process", flag: DurationSpan|IncrementalSpan, transactions: []Transaction{{duration: 1 * time.Millisecond}}},
+				spans: map[string]*Span{
+					"key1": {key: "test-process", flag: DurationSpan | IncrementalSpan, transactions: []Transaction{{duration: 1 * time.Millisecond}}},
+				},
 			},
-		},
 			"canonical-log-line test-process_duration=0.001000 test-process_total=1"},
 	}
 	for _, tt := range tests {

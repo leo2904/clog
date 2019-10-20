@@ -30,4 +30,4 @@ func NewNoop() Reporter {
 }
 
 func (r noopReporter) Send(fmtLine string, severity Severity) {}
-func (r noopReporter) Close() error        { return nil }
+func (r noopReporter) Close() error                           { return nil }
