@@ -1,3 +1,6 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/friendsofgo/clog)](https://goreportcard.com/report/github.com/friendsofgo/clog)
+[![GoDoc](https://godoc.org/graphql.co/clog?status.svg)](https://godoc.org/github.com/friendsofgo/clog)
+[![FriendsOfGo](https://img.shields.io/badge/powered%20by-Friends%20of%20Go-73D7E2.svg)](https://friendsofgo.tech)
 # Canonical Log lines
 
 This package is a Go log library for create a Canonical log lines.
